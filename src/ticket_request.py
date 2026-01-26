@@ -1,6 +1,7 @@
 import requests
 import toml
 #from pydantic import BaseModel # Helps define classes
+import streamlit as st
 from pathlib import Path
 
 class TicketRequest:
@@ -18,10 +19,8 @@ class TicketRequest:
     @staticmethod
     def get_secret():
         try:
-            project_root = Path(__file__).resolve().parents[1]
-            secrets_path = project_root / ".streamlit" / "secrets.toml"
-            secrets = toml.load(secrets_path)
-            return secrets["TICKETMASTER_API_KEY"]
+            secret = st.secrets["TICKETMASTER_API_KEY"]
+            return secret
 
         except FileNotFoundError:
             raise RuntimeError("secrets.toml not found")
