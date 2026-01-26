@@ -1,6 +1,6 @@
 import requests
 import toml
-
+#from pydantic import BaseModel # Helps define classes
 from pathlib import Path
 
 class TicketRequest:

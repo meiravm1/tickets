@@ -12,7 +12,8 @@ dependencies = [
     "seaborn",
     "pandas",
     "plotly",
-    "matplotlib"
+    "matplotlib",
+    "pydantic",
 ]
 
 

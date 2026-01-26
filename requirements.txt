@@ -4,3 +4,4 @@ seaborn
 pandas
 plotly
 matplotlib
+pydantic
