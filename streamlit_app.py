@@ -3,6 +3,9 @@ import streamlit as st
 from src.ticket_request import TicketRequest
 from src.data_analyser import DataAnalyser
 from src.displayer import Displayer
+from src.constants import Constants
+
+
 BASE_URL = "https://app.ticketmaster.com/discovery/v2/events.json"
 
 
@@ -14,30 +17,31 @@ st.set_page_config(page_title="International Concert Facts", layout="wide")
 st.title("🎟️ Interesting Facts About International Concert Tickets")
 st.caption("Data source: Ticketmaster Discovery API (Music events). This is a small sample across 5 capitals.")
 
-capital_events = TicketRequest(BASE_URL).load_capitals_dataset(size_each=80)
-da = DataAnalyser(capital_events)
-capitals_df = da.build_df_from_events()
+events = TicketRequest(BASE_URL).load_capitals_dataset(size_each=80)
+da = DataAnalyser(events)
+events_df = da.build_df_from_events()
 ds = Displayer()
-ds.show_row_dataset(capitals_df)
+ds.show_row_dataset(events_df)
 
 # -------- Section A: "happening now" + clocks
-st.subheader("1) What concerts are happening now?")
 WINDOW_HOURS = 24
+st.subheader(f"1) What concerts are happening on the next {WINDOW_HOURS} hours?")
+
 cols = st.columns(5)
-for i, cap in enumerate(DataAnalyser.CAPITALS):
+for i, cap in enumerate(Constants.CAPITALS):
     with cols[i]:
         st.metric(label=f"🕒 {cap['city']}", value=da.local_time_str(cap["tz"]))
-        n = da.count_happening_soon(capitals_df, cap["city"], cap["tz"], window_hours=WINDOW_HOURS)
-        st.write(f"Events starting in next {WINDOW_HOURS}: **{n}**")
-        st.dataframe(capitals_df[capitals_df.city == cap['city']]['name'].head(5))
+        n = da.count_happening_soon(events_df, cap["city"], cap["tz"], window_hours=WINDOW_HOURS)
+        st.write(f"Events starting in next {WINDOW_HOURS} hours: **{n}**")
+        st.dataframe(events_df[events_df.city == cap['city']]['name'].head(5))
 st.divider()
 
 
 # -------- Section B: price comparison for a band
 st.subheader("2) Price comparison for a selected band (across capitals)")
-band = st.text_input("Band / artist name (example: Metallica)", value="Metallica")
+band = ds.band_across_cities_list(events_df)
 
-band_df = capitals_df[capitals_df["name"] == band]
+band_df = events_df[events_df["name"] == band]
 band_df = band_df.dropna(subset=["price_min", "city"])
 
 if band_df.empty:

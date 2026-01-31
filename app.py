@@ -9,13 +9,6 @@ import pytz
 # ----------------------------
 BASE_URL = "https://app.ticketmaster.com/discovery/v2/events.json"
 
-CAPITALS = [
-    {"city": "London", "countryCode": "GB", "tz": "Europe/London"},
-    {"city": "Paris", "countryCode": "FR", "tz": "Europe/Paris"},
-    {"city": "New York", "countryCode": "US", "tz": "America/New_York"},
-    {"city": "Tokyo", "countryCode": "JP", "tz": "Asia/Tokyo"},
-    {"city": "Sydney", "countryCode": "AU", "tz": "Australia/Sydney"},
-]
 
 # ----------------------------
 # API + Data shaping
@@ -86,7 +79,7 @@ def build_df_from_events(events: list[dict]) -> pd.DataFrame:
 @st.cache_data(ttl=300)
 def load_capitals_dataset(api_key: str, size_each: int = 80) -> pd.DataFrame:
     all_events = []
-    for c in CAPITALS:
+    for c in constants.CAPITALS:
         data = fetch_events(api_key, c["city"], c["countryCode"], size=size_each)
         events = data.get("_embedded", {}).get("events", [])
         all_events.extend(events)
@@ -135,7 +128,7 @@ df = load_capitals_dataset(api_key)
 # -------- Section A: "happening now" + clocks
 st.subheader("1) What concerts are happening now?")
 cols = st.columns(5)
-for i, cap in enumerate(CAPITALS):
+for i, cap in enumerate(constants.CAPITALS):
     with cols[i]:
         st.metric(label=f"🕒 {cap['city']}", value=local_time_str(cap["tz"]))
         n = count_happening_soon(df, cap["city"], cap["tz"], window_hours=2)

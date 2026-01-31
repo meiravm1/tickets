@@ -10,13 +10,6 @@ import datetime
 
 class DataAnalyser:
 
-    CAPITALS = [
-        {"city": "London", "countryCode": "GB", "tz": "Europe/London"},
-        {"city": "Paris", "countryCode": "FR", "tz": "Europe/Paris"},
-        {"city": "New York", "countryCode": "US", "tz": "America/New_York"},
-        {"city": "Tokyo", "countryCode": "JP", "tz": "Asia/Tokyo"},
-        {"city": "Sydney", "countryCode": "AU", "tz": "Australia/Sydney"},
-    ]
 
     def __init__(self, data):
         self.data = data
@@ -122,3 +115,11 @@ class DataAnalyser:
     #         fig = px.scatter(self.df, x='venue_city_name', y='venue_latitude', color='venue_country', title='countries')
     #         st.plotly_chart(fig)
     #     # TODO classification
+
+
+    def bands_with_multiple_cities(self,df: pd.DataFrame):
+        # drop rows with empty min ,max price for this graph
+        bands_with_prices = df.dropna(subset=['price_min','price_max'],how='any')
+        return  bands_with_prices[bands_with_prices.groupby("performer")["city"].transform("nunique") > 1]["performer"]
+
+

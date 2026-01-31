@@ -5,16 +5,7 @@ import requests
 import toml
 #from pydantic import BaseModel # Helps define classes
 import streamlit as st
-from pathlib import Path
-
-CAPITALS = [
-    {"city": "London", "countryCode": "GB", "tz": "Europe/London"},
-    {"city": "Paris", "countryCode": "FR", "tz": "Europe/Paris"},
-    {"city": "New York", "countryCode": "US", "tz": "America/New_York"},
-    {"city": "Tokyo", "countryCode": "JP", "tz": "Asia/Tokyo"},
-    {"city": "Sydney", "countryCode": "AU", "tz": "Australia/Sydney"},
-]
-
+from src.constants import Constants
 
 
 class TicketRequest:
@@ -50,7 +41,7 @@ class TicketRequest:
 
     def load_capitals_dataset(self,size_each: int = 80) -> list:
         all_events = []
-        for c in CAPITALS:
+        for c in Constants.CAPITALS:
             data = self.fetch_events(c["city"], c["countryCode"], size=size_each)
             events = data.get("_embedded", {}).get("events", [])
             all_events.extend(events)
@@ -59,7 +50,7 @@ class TicketRequest:
 
     def load_bands_dataset(self,size_each: int = 80) -> list:
         all_events = []
-        for c in CAPITALS:
+        for c in Constants.CAPITALS:
             data = self.fetch_events(c["city"], c["countryCode"], size=size_each)
             events = data.get("_embedded", {}).get("events", [])
             all_events.extend(events)
