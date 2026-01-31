@@ -1,13 +1,21 @@
 class Constants:
     CAPITALS = [
+        {"city": "New York", "countryCode": "US", "tz": "America/New_York"},
+        {"city": "New York", "countryCode": "US", "tz": "America/New_York"},
+        {"city": "Los Angeles", "countryCode": "US", "tz": "America/Los_Angeles"},
+        {"city": "Chicago", "countryCode": "US", "tz": "America/Chicago"},
+        {"city": "San Francisco", "countryCode": "US", "tz": "America/Los_Angeles"},
+        {"city": "Boston", "countryCode": "US", "tz": "America/New_York"},
+        {"city": "Atlanta", "countryCode": "US", "tz": "America/New_York"}
+    ]
         # UK / France / Germany / Netherlands / Belgium
-            {"city": "London", "countryCode": "GB", "tz": "Europe/London"},
-            {"city": "Paris", "countryCode": "FR", "tz": "Europe/Paris"},
-            {"city": "Berlin", "countryCode": "DE", "tz": "Europe/Berlin"},
-            {"city": "Munich", "countryCode": "DE", "tz": "Europe/Berlin"},
-            {"city": "Amsterdam", "countryCode": "NL", "tz": "Europe/Amsterdam"},
-            {"city": "Brussels", "countryCode": "BE", "tz": "Europe/Brussels"}
-        ]
+        #     {"city": "London", "countryCode": "GB", "tz": "Europe/London"},
+        #     {"city": "Paris", "countryCode": "FR", "tz": "Europe/Paris"},
+        #     {"city": "Berlin", "countryCode": "DE", "tz": "Europe/Berlin"},
+        #     {"city": "Munich", "countryCode": "DE", "tz": "Europe/Berlin"},
+        #     {"city": "Amsterdam", "countryCode": "NL", "tz": "Europe/Amsterdam"},
+        #     {"city": "Brussels", "countryCode": "BE", "tz": "Europe/Brussels"}
+        # ]
 
         # # Spain / Portugal / Italy
         # {"city": "Madrid", "countryCode": "ES", "tz": "Europe/Madrid"},

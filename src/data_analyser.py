@@ -19,13 +19,14 @@ class DataAnalyser:
         # events = self.data["_embedded"]["events"]
         events_df = pd.json_normalize(self.data)
         # Prices
+        price_0 = events_df["priceRanges"].map(lambda v: v[0] if isinstance(v, list) and v else {})
         events_df["price_min"] = pd.to_numeric(
-            events_df.get("priceRanges.0.min"),
+            price_0.map(lambda p: p.get("min")),
             errors="coerce"
         )
 
         events_df["price_max"] = pd.to_numeric(
-            events_df.get("priceRanges.0.max"),
+            price_0.map(lambda p: p.get("max")),
             errors="coerce"
         )
         # Genre
@@ -119,7 +120,10 @@ class DataAnalyser:
 
     def bands_with_multiple_cities(self,df: pd.DataFrame):
         # drop rows with empty min ,max price for this graph
-        bands_with_prices = df.dropna(subset=['price_min','price_max'],how='any')
-        return  bands_with_prices[bands_with_prices.groupby("performer")["city"].transform("nunique") > 1]["performer"]
+        bands_with_prices = df.dropna(subset=['price_min','price_max',"performer"],how='any')
+        print("bands_with_prices",bands_with_prices)
+        list_of_bands = bands_with_prices[bands_with_prices.groupby("performer")["city"].transform("nunique") > 1]["performer"].unique().tolist()
+        print("list_of_bands",list_of_bands)
+        return list_of_bands
 
 

@@ -13,14 +13,15 @@ def main():
     print(capitals_df.head())
     for i, cap in enumerate(Constants.CAPITALS):
         n = da.count_happening_soon(capitals_df, cap["city"], cap["tz"], window_hours=24)
-        print(cap,n)
+        #print(cap,n)
 
     # bands across cities
-    print(capitals_df)
-    band = da.bands_with_multiple_cities(capitals_df)
-    band_df = capitals_df[capitals_df["name"] == band]
+    #print(capitals_df)
+    band = da.bands_with_multiple_cities(capitals_df).iloc[0]
 
-
+    band_df = capitals_df[capitals_df["performer"] == band]
+    print("pre")
+    print(band_df.head())
 
 
 

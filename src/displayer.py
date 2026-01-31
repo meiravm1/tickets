@@ -21,11 +21,4 @@ class Displayer():
     #             n = self.count_happening_soon(df, cap["city"], cap["tz"], window_hours=2)
     #             st.write(f"Events starting in next 2h: **{n}**")
 
-    def band_across_cities_list(self,df:pd.DataFrame):
-         performer_options = df["performer"].dropna().sort_values().unique().tolist()
-         return st.selectbox(
-             "Choose a performer touring multiple cities",
-             performer_options
-         )
-
 
