@@ -1,6 +1,5 @@
 class Constants:
-    CAPITALS = [
-        {"city": "New York", "countryCode": "US", "tz": "America/New_York"},
+    CITIES = [
         {"city": "New York", "countryCode": "US", "tz": "America/New_York"},
         {"city": "Los Angeles", "countryCode": "US", "tz": "America/Los_Angeles"},
         {"city": "Chicago", "countryCode": "US", "tz": "America/Chicago"},

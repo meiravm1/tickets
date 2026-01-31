@@ -14,7 +14,7 @@ class TicketRequest:
         self.api_key = self.get_secret()
         self.url = url
 
-    def fetch_events(self, city: str, country_code: str, size: int = 100) -> dict:
+    def fetch_city_events(self, city: str, country_code: str, size: int = 100) -> dict:
         params = {
             "apikey": self.api_key,
             "city": city,
@@ -27,7 +27,6 @@ class TicketRequest:
         r.raise_for_status()
         return r.json()
 
-
     @staticmethod
     def get_secret():
         try:
@@ -39,20 +38,13 @@ class TicketRequest:
         except KeyError:
             raise RuntimeError("API key missing in secrets.toml")
 
-    def load_capitals_dataset(self,size_each: int = 80) -> list:
+    def load_events_dataset(self, size_each: int = 80) -> list:
         all_events = []
-        for c in Constants.CAPITALS:
-            data = self.fetch_events(c["city"], c["countryCode"], size=size_each)
+        for c in Constants.CITIES:
+            data = self.fetch_city_events(c["city"], c["countryCode"], size=size_each)
             events = data.get("_embedded", {}).get("events", [])
             all_events.extend(events)
 
         return all_events
 
-    def load_bands_dataset(self,size_each: int = 80) -> list:
-        all_events = []
-        for c in Constants.CAPITALS:
-            data = self.fetch_events(c["city"], c["countryCode"], size=size_each)
-            events = data.get("_embedded", {}).get("events", [])
-            all_events.extend(events)
 
-        return all_events

@@ -30,17 +30,16 @@ class DataAnalyser:
             errors="coerce"
         )
         # Genre
-        events_df["genre"] = events_df.get("classifications.0.genre.name")
+        genre_0 = events_df["classifications"].map(lambda v:v[0] if isinstance(v,list) and v else {})
+        events_df["genre"] = genre_0.map(lambda g: (g.get("genre") or {}).get("name"))
         # Venue
         venue_0 = events_df["_embedded.venues"].map(lambda v: v[0] if v else {})
         venue_df = pd.DataFrame({
             "venue_name": venue_0.map(lambda d: d.get("name")),
-            "venue_city": venue_0.map(lambda d: (d.get("city") or {}).get("name")),
-            "venue_country": venue_0.map(lambda d: (d.get("country") or {}).get("name")),
-            "venue_latitude": pd.to_numeric(venue_0.map(lambda d: (d.get("location") or {}).get("latitude")),
-                                            errors="coerce"),
-            "venue_longitude": pd.to_numeric(venue_0.map(lambda d: (d.get("location") or {}).get("longitude")),
-                                             errors="coerce"),
+            "city": venue_0.map(lambda d: (d.get("city") or {}).get("name")),
+            "country": venue_0.map(lambda d: (d.get("country") or {}).get("name")),
+            "lat": pd.to_numeric(venue_0.map(lambda d: (d.get("location") or {}).get("latitude")),errors="coerce"),
+            "lon": pd.to_numeric(venue_0.map(lambda d: (d.get("location") or {}).get("longitude")),errors="coerce"),
         })
         df = events_df.join(venue_df, lsuffix="_event", rsuffix="_venue")
 
@@ -53,9 +52,9 @@ class DataAnalyser:
         dt = pd.to_datetime(df["local_date"].astype(str) + " " + df["local_time"].astype(str), errors="coerce")
         df["start_hour"] = dt.dt.hour
 
-        # Nice label for city/country
-        df["city"] = df["venue_city"]
-        df["country"] = df["venue_country"]
+        # # Nice label for city/country
+        # df["city"] = df["venue_city"]
+        # df["country"] = df["venue_country"]
 
         df = df.dropna(subset=["city"])
 
@@ -99,31 +98,29 @@ class DataAnalyser:
 
         return len(filtered_df)
 
-    # def display(self):
-    #
-    #     st.title('My first app')
-    #
-    #     plot_choice = st.radio('Choose you plot library:', ['Seaborn', 'Plotly'])
-    #
-    #     if plot_choice == 'Seaborn':
-    #         print("seaborn")
-    #         fig, ax = plt.subplots()
-    #         sns.scatterplot(data=self.df, x='venue_city_name', y='venue_latitude', hue='venue_country')
-    #         st.pyplot(fig)
-    #
-    #     elif plot_choice == 'Plotly':
-    #         print("Plotly")
-    #         fig = px.scatter(self.df, x='venue_city_name', y='venue_latitude', color='venue_country', title='countries')
-    #         st.plotly_chart(fig)
-    #     # TODO classification
-
-
-    def bands_with_multiple_cities(self,df: pd.DataFrame):
+    def bands_with_multiple_cities_list(self, df: pd.DataFrame):
         # drop rows with empty min ,max price for this graph
         bands_with_prices = df.dropna(subset=['price_min','price_max',"performer"],how='any')
-        print("bands_with_prices",bands_with_prices)
+        #print("bands_with_prices",bands_with_prices)
         list_of_bands = bands_with_prices[bands_with_prices.groupby("performer")["city"].transform("nunique") > 1]["performer"].unique().tolist()
-        print("list_of_bands",list_of_bands)
+        #print("list_of_bands",list_of_bands)
         return list_of_bands
 
+    def city_event_counts(self,df:pd.DataFrame):
+        # Keep only rows with coordinates
+        df_geo = df.dropna(subset=["city", "lat", "lon"]).copy()
 
+        # Aggregate to city-level counts + a representative city coordinate
+        return (
+            df_geo.groupby("city", as_index=False)
+            .agg(
+                n_events=("city", "size"),
+                latitude=("lat", "median"),
+                longitude=("lon", "median"),
+            )
+        )
+
+    def genre_list(self, df: pd.DataFrame):
+        # drop rows with empty min ,max price for this graph
+        genres = df.dropna(subset=['genre'],how='any')['genre'].unique().tolist()
+        return genres
