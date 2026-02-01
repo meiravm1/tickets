@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -7,12 +5,14 @@ import matplotlib.pyplot as plt
 
 from src.data_analyser import DataAnalyser
 
+
 class Displayer():
 
     @staticmethod
     def show_row_dataset(df):
         with st.expander("Show raw dataset (sample)"):
             st.dataframe(df.head(50))
+
     @staticmethod
     def genres_per_city(events_df: pd.DataFrame):
         genre_city_df = events_df.dropna(subset=["city", "genre"]).copy()
@@ -79,7 +79,7 @@ class Displayer():
             .dropna(subset=["genre"]))
         map_df = da.city_event_counts(filtered).copy()
         if not map_df.empty:
-            st.map(map_df[["latitude", "longitude"]], size="n_events")
+            st.map(map_df[["latitude", "longitude"]], size="n_events" * 10)
             st.dataframe(map_df.sort_values("n_events", ascending=False))
 
     @staticmethod
