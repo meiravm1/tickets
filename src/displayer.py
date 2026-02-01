@@ -1,3 +1,4 @@
+import numpy as np
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -40,17 +41,17 @@ class Displayer():
         filtered = (
             events_df
             .loc[events_df["performer"].isin(selected_performers)]
-            .dropna(subset=["price_min", "city"])
+            .dropna(subset=["price_max", "city"])
         )
         if filtered.empty:
             st.info("No priced events found for the selected performers.")
         else:
-            st.write("Showing **min ticket price by city** for selected performers.")
+            st.write("Showing **max ticket price by city** for selected performers.")
 
             g = sns.catplot(
                 data=filtered,
                 x="city",
-                y="price_min",
+                y="price_max",
                 col="performer",  # 👈 one chart per performer
                 kind="strip",  # scatter-like (good for few points)
                 col_wrap=3,
@@ -63,6 +64,7 @@ class Displayer():
                 ax.tick_params(axis="x", rotation=45)
 
             st.pyplot(g.fig)
+            st.dataframe(filtered[["performer","genre","city","price_min","price_max","date_time"]].sort_values(by=["performer","city","date_time"]))
 
     @staticmethod
     def city_event_counts(events_df: pd.DataFrame):
@@ -78,9 +80,10 @@ class Displayer():
             .loc[events_df["genre"].isin(selected_genres)]
             .dropna(subset=["genre"]))
         map_df = da.city_event_counts(filtered).copy()
+        map_df['size'] = map_df["n_events"] ** 5
         if not map_df.empty:
-            st.map(map_df[["latitude", "longitude"]], size="n_events" * 10)
-            st.dataframe(map_df.sort_values("n_events", ascending=False))
+            st.map(map_df[["latitude", "longitude"]], size="size")
+            st.dataframe(filtered[["city","n_events"]].sort_values("n_events", ascending=False))
 
     @staticmethod
     def hours_per_city(events_df: pd.DataFrame):
@@ -89,4 +92,15 @@ class Displayer():
             st.info("No event start times found.")
         else:
             g = sns.catplot(data=hour_df, x="start_hour", col="city", kind="count", col_wrap=3)
-            st.pyplot(g.figure, use_container_width=True)
+            st.pyplot(g.figure, width='stretch')
+
+    @staticmethod
+    def price_hour_genre_corr(events_df: pd.DataFrame):
+        g = sns.pairplot(
+            events_df[["price_min", "price_max", "start_hour", "genre"]],
+            vars=["price_min", "price_max", "start_hour"],
+            hue="genre",
+            corner=True,
+            height=2.2
+        )
+        st.pyplot(g.figure, width="stretch")

@@ -50,6 +50,7 @@ class DataAnalyser:
 
         # Create a "start_hour" for histogram
         dt = pd.to_datetime(df["local_date"].astype(str) + " " + df["local_time"].astype(str), errors="coerce")
+        df["date_time"] = dt.dt.strftime("%y-%m-%d %H:%M:%S")
         df["start_hour"] = dt.dt.hour
 
         df = df.dropna(subset=["city"])
@@ -64,7 +65,7 @@ class DataAnalyser:
         keep = [
             "name", "genre", "segment",
             "price_min", "price_max",
-            "local_date", "local_time", "timezone", "start_hour",
+            "date_time","local_date", "local_time", "timezone", "start_hour",
             "venue_name", "city", "country", "lat", "lon",
             "url", "performer"
         ]
@@ -97,7 +98,7 @@ class DataAnalyser:
 
     def bands_with_multiple_cities_list(self, df: pd.DataFrame):
         # drop rows with empty min ,max price for this graph
-        bands_with_prices = df.dropna(subset=['price_min', 'price_max', "performer"], how='any')
+        bands_with_prices = df.loc[df["price_max"] > 0].dropna(subset=['price_min', 'price_max', "performer"], how='any')
 
         # get only performers which perform on more than 1 city
         list_of_bands = bands_with_prices[bands_with_prices.groupby("performer")["city"].transform("nunique") > 1][
