@@ -26,7 +26,15 @@ def main():
     print(band_df.head())
 
     map_df = capitals_df.dropna(subset=["lat", "lon"]).copy()
-
+    ########
+    filtered = (
+        capitals_df
+        .loc[capitals_df["genre"].isin(["Jazz"])]
+        .dropna(subset=["genre"]))
+    map_df = da.city_event_counts(filtered).copy()
+    map_df['size'] = map_df["n_events"] ** 5
+    if not map_df.empty:
+        map_df[["city", "n_events"]].sort_values("n_events", ascending=False)
 
 if __name__ == '__main__':
     main()

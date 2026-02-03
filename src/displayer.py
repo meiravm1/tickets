@@ -83,7 +83,7 @@ class Displayer():
         map_df['size'] = map_df["n_events"] ** 5
         if not map_df.empty:
             st.map(map_df[["latitude", "longitude"]], size="size")
-            st.dataframe(filtered[["city","n_events"]].sort_values("n_events", ascending=False))
+            st.dataframe(map_df[["city","n_events"]].sort_values("n_events", ascending=False))
 
     @staticmethod
     def hours_per_city(events_df: pd.DataFrame):
